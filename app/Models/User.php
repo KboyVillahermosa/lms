@@ -61,4 +61,9 @@ class User extends Authenticatable
 
         return in_array($this->role, $roles, true);
     }
+
+    public function assignments()
+    {
+        return $this->belongsToMany(\App\Models\Assignment::class)->withTimestamps();
+    }
 }

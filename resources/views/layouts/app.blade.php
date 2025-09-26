@@ -32,5 +32,8 @@
                 {{ $slot }}
             </main>
         </div>
+        @if(app()->bound('flasher'))
+            @flasher_render()
+        @endif
     </body>
 </html>
