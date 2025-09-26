@@ -12,9 +12,59 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+                    @php $role = optional(Auth::user())->role; @endphp
+
+                    @if($role === 'admin')
+                        <x-nav-link :href="route('dashboard.admin')" :active="request()->routeIs('dashboard.admin')">
+                            {{ __('Admin') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.grading.index')" :active="request()->routeIs('admin.grading.*')">
+                            {{ __('Grading') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.assignments.index')" :active="request()->routeIs('admin.assignments.*')">
+                            {{ __('Manage Assignments') }}
+                        </x-nav-link>
+                    @elseif($role === 'instructor')
+                        <x-nav-link :href="route('dashboard.instructor')" :active="request()->routeIs('dashboard.instructor')">
+                            {{ __('Instructor') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('assignments.display')" :active="request()->routeIs('assignments.display*')">
+                            {{ __('Assignments') }}
+                        </x-nav-link>
+                    @elseif($role === 'student')
+                        @php
+                            $user = Auth::user();
+                            $pendingCount = 0;
+                            if ($user) {
+                                $visible = \App\Models\Assignment::where(function($q) use ($user) {
+                                    $q->whereDoesntHave('students')
+                                      ->orWhereHas('students', function($s) use ($user) { $s->where('users.id', $user->id); });
+                                })->pluck('id');
+
+                                $pendingCount = \App\Models\Assignment::whereIn('id', $visible)->whereDoesntHave('submissions', function($q) use ($user) {
+                                    $q->where('user_id', $user->id)->where('graded', true);
+                                })->count();
+                            }
+                        @endphp
+
+                        <x-nav-link :href="route('dashboard.student')" :active="request()->routeIs('dashboard.student')">
+                            {{ __('Student') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('assignments.display')" :active="request()->routeIs('assignments.display*')">
+                            {{ __('Assignments') }}
+                            @if($pendingCount > 0)
+                                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">{{ $pendingCount }}</span>
+                            @endif
+                        </x-nav-link>
+                    @elseif($role === 'registrar')
+                        <x-nav-link :href="route('dashboard.registrar')" :active="request()->routeIs('dashboard.registrar')">
+                            {{ __('Registrar') }}
+                        </x-nav-link>
+                    @else
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -67,9 +117,22 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
+            @php $role = optional(Auth::user())->role; @endphp
+
+            @if($role === 'admin')
+                <x-responsive-nav-link :href="route('dashboard.admin')" :active="request()->routeIs('dashboard.admin')">{{ __('Admin') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.assignments.index')">{{ __('Manage Assignments') }}</x-responsive-nav-link>
+            @elseif($role === 'instructor')
+                <x-responsive-nav-link :href="route('dashboard.instructor')">{{ __('Instructor') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('assignments.display')">{{ __('Assignments') }}</x-responsive-nav-link>
+            @elseif($role === 'student')
+                <x-responsive-nav-link :href="route('dashboard.student')">{{ __('Student') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('assignments.display')">{{ __('Assignments') }}</x-responsive-nav-link>
+            @elseif($role === 'registrar')
+                <x-responsive-nav-link :href="route('dashboard.registrar')">{{ __('Registrar') }}</x-responsive-nav-link>
+            @else
+                <x-responsive-nav-link :href="route('dashboard')">{{ __('Dashboard') }}</x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
