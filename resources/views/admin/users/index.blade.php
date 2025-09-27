@@ -6,27 +6,44 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                <a href="{{ route('admin.users.create') }}">Create user</a>
-                <table class="table w-full mt-4">
-                    <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead>
-                    <tbody>
-                    @foreach($users as $u)
-                        <tr>
-                            <td>{{ $u->id }}</td>
-                            <td>{{ $u->name }}</td>
-                            <td>{{ $u->email }}</td>
-                            <td>{{ $u->role }}</td>
-                            <td>
-                                <form action="{{ route('admin.users.destroy', $u) }}" method="POST" onsubmit="return confirm('Delete?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                    </tbody>
-                </table>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-text-primary">Users</h3>
+                    <a href="{{ route('admin.users.create') }}" class="inline-flex items-center px-3 py-2 bg-primary hover:bg-primary-700 text-white rounded-md text-sm font-medium">
+                        {{ __('Create user') }}
+                    </a>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach($users as $u)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $u->id }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-primary">{{ $u->name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $u->email }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ ucfirst($u->role) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-right">
+                                    <form action="{{ route('admin.users.destroy', $u) }}" method="POST" onsubmit="return confirm('Delete?')" class="inline-block">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm">{{ __('Delete') }}</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
                 <div class="mt-4">{{ $users->links() }}</div>
             </div>
         </div>
