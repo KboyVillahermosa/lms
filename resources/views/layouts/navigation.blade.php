@@ -1,13 +1,13 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+<nav x-data="{ open: false }" class="bg-white border-b border-gray-100 p-3">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                    </a>
+                <a href="{{ route('dashboard') }}" class="flex items-center">
+                <img src="{{ asset('images/logo.png') }}" alt="ATC LearnHub" class="block h-28 sm:h-24 md:h-32 w-auto me-8" />
+            </a>
                 </div>
 
                 <!-- Navigation Links -->
@@ -55,6 +55,9 @@
                             @if($pendingCount > 0)
                                 <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">{{ $pendingCount }}</span>
                             @endif
+                        </x-nav-link>
+                        <x-nav-link :href="route('student.quizzes.index')" :active="request()->routeIs('student.quizzes.*')">
+                            {{ __('Quizzes') }}
                         </x-nav-link>
                     @elseif($role === 'registrar')
                         <x-nav-link :href="route('dashboard.registrar')" :active="request()->routeIs('dashboard.registrar')">
@@ -128,6 +131,7 @@
             @elseif($role === 'student')
                 <x-responsive-nav-link :href="route('dashboard.student')">{{ __('Student') }}</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('assignments.display')">{{ __('Assignments') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('student.quizzes.index')">{{ __('Quizzes') }}</x-responsive-nav-link>
             @elseif($role === 'registrar')
                 <x-responsive-nav-link :href="route('dashboard.registrar')">{{ __('Registrar') }}</x-responsive-nav-link>
             @else

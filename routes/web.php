@@ -29,6 +29,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Student quiz routes
+Route::prefix('student')->name('student.')->middleware(['auth','role:student'])->group(function(){
+    Route::get('quizzes', [\App\Http\Controllers\Student\QuizController::class, 'index'])->name('quizzes.index');
+    Route::get('quizzes/{quiz}', [\App\Http\Controllers\Student\QuizController::class, 'show'])->name('quizzes.show');
+    Route::post('quizzes/{quiz}/submit', [\App\Http\Controllers\Student\QuizController::class, 'submit'])->name('quizzes.submit');
+});
+
 // Role-based dashboards (organized controllers/views)
 Route::middleware(['auth','role:student'])->get('/dashboard/student', [StudentController::class, 'index'])->name('dashboard.student');
 Route::middleware(['auth','role:instructor'])->get('/dashboard/instructor', [InstructorController::class, 'index'])->name('dashboard.instructor');
@@ -67,4 +74,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth','role:admin'])->group
     Route::post('assignments/{assignment}/submissions/{submission}/grade', [\App\Http\Controllers\Admin\AssignmentSubmissionController::class, 'grade'])->name('assignments.submissions.grade');
     // Central grading dashboard (admin)
     Route::get('grading', [\App\Http\Controllers\Admin\GradingController::class, 'index'])->name('grading.index');
+    
+    // Quizzes
+    Route::get('quizes', [\App\Http\Controllers\Admin\QuizController::class, 'index'])->name('quizes.index');
+    Route::get('quizes/create', [\App\Http\Controllers\Admin\QuizController::class, 'create'])->name('quizes.create');
+    Route::post('quizes', [\App\Http\Controllers\Admin\QuizController::class, 'store'])->name('quizes.store');
 });
