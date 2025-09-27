@@ -50,6 +50,21 @@
                         <a href="{{ route('admin.assignments.create') }}" class="px-3 py-2 bg-gray-100 text-gray-700 rounded-md text-sm">Create</a>
                     </div>
                 </div>
+                
+                <div class="bg-white shadow rounded-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold">Quizzes</h3>
+                            <p class="text-sm text-gray-500">Create quizzes, questions and assign to students</p>
+                        </div>
+                        <div class="text-3xl font-bold text-gray-700">{{ \App\Models\Quiz::count() ?? 0 }}</div>
+                    </div>
+
+                    <div class="mt-4 flex items-center space-x-2">
+                        <a href="{{ route('admin.quizes.index') }}" class="px-3 py-2 bg-indigo-600 text-white rounded-md text-sm">Manage</a>
+                        <a href="{{ route('admin.quizes.create') }}" class="px-3 py-2 bg-gray-100 text-gray-700 rounded-md text-sm">Create</a>
+                    </div>
+                </div>
             </div>
 
             <div class="mt-8">
