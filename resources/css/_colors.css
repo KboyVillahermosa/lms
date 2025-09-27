@@ -1,0 +1,9 @@
+:root{
+  --color-primary: #4F46E5; /* Indigo 600 */
+  --color-primary-700: #4338CA;
+  --color-accent: #2DD4BF;
+  --bg-page: #F9FAFB;
+  --text-primary: #0F172A;
+  --text-muted: #6B7280;
+  --overlay: rgba(0,0,0,0.5);
+}

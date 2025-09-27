@@ -15,15 +15,26 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
+        <div class="min-h-screen bg-gray-100">
+            <div class="min-h-screen grid grid-cols-1 md:grid-cols-2">
+                <!-- Left: auth form (no card) -->
+                <div class="flex items-center justify-center p-6">
+                    <div class="w-full max-w-md px-6 py-12">
+                        {{ $slot }}
+                    </div>
+                </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
+                <!-- Right: cover image with overlay and marketing text (hidden on small screens) -->
+                <div class="hidden md:block relative">
+                    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{ asset('images/login-logo.png') }}');"></div>
+                    <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+                    <div class="relative h-full flex items-center justify-center p-8">
+                        <div class="text-center max-w-xs">
+                            <h2 class="text-2xl font-semibold text-white">ATC Tagum College</h2>
+                            <p class="mt-3 text-sm text-gray-200">{{ __('Deliver and track online courses, submit and grade assignments, and monitor learner progress — all in one secure platform.') }}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </body>
