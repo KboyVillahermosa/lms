@@ -16,10 +16,25 @@ class Course extends Model
         'description',
         'instructor_id',
         'capacity',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     public function instructor()
     {
         return $this->belongsTo(User::class, 'instructor_id');
+    }
+
+    public function students()
+    {
+        return $this->belongsToMany(User::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
     }
 }
