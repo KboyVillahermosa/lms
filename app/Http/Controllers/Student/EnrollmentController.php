@@ -23,44 +23,15 @@ class EnrollmentController extends Controller
 
     public function create()
     {
-        $user = Auth::user();
-        
-        // Get active courses the user hasn't already requested enrollment for
-        $requestedCourseIds = EnrollmentRequest::where('user_id', $user->id)->pluck('course_id');
-        $courses = Course::active()
-            ->whereNotIn('id', $requestedCourseIds)
-            ->get();
-
-        return view('students.enrollments.create', compact('courses'));
+        // Redirect to new enrollment wizard
+        return redirect()->route('student.enrollment.wizard')
+            ->with('info', 'We\'ve upgraded our enrollment process! Please use the new application wizard.');
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'course_id' => 'required|exists:courses,id',
-            'reason' => 'nullable|string|max:500'
-        ]);
-
-        $user = Auth::user();
-
-        // Check if user already has a request for this course
-        $existingRequest = EnrollmentRequest::where('user_id', $user->id)
-            ->where('course_id', $request->course_id)
-            ->first();
-
-        if ($existingRequest) {
-            return redirect()->route('student.enrollments.index')
-                ->with('error', 'You have already submitted an enrollment request for this course.');
-        }
-
-        EnrollmentRequest::create([
-            'user_id' => $user->id,
-            'course_id' => $request->course_id,
-            'reason' => $request->reason,
-            'status' => 'pending'
-        ]);
-
-        return redirect()->route('student.enrollments.index')
-            ->with('success', 'Enrollment request submitted successfully!');
+        // Redirect to new enrollment wizard
+        return redirect()->route('student.enrollment.wizard')
+            ->with('info', 'Please use our new comprehensive enrollment application process.');
     }
 }

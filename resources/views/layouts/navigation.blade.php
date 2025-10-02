@@ -68,8 +68,8 @@
                         <x-nav-link :href="route('student.quizzes.index')" :active="request()->routeIs('student.quizzes.*')">
                             {{ __('Quizzes') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('student.enrollments.index')" :active="request()->routeIs('student.enrollments.*')">
-                            {{ __('Enrollments') }}
+                        <x-nav-link :href="route('student.enrollment.wizard')" :active="request()->routeIs('student.enrollment.*')">
+                            {{ __('Enrollment Application') }}
                         </x-nav-link>
                         <x-nav-link :href="route('student.announcements.index')" :active="request()->routeIs('student.announcements.*')">
                             {{ __('Announcements') }}
@@ -150,7 +150,7 @@
                 <x-responsive-nav-link :href="route('dashboard.student')">{{ __('Student') }}</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('assignments.display')">{{ __('Assignments') }}</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('student.quizzes.index')">{{ __('Quizzes') }}</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('student.enrollments.index')">{{ __('Enrollments') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('student.enrollment.wizard')">{{ __('Enrollment Application') }}</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('student.announcements.index')">{{ __('Announcements') }}</x-responsive-nav-link>
             @elseif($role === 'registrar')
                 <x-responsive-nav-link :href="route('dashboard.registrar')">{{ __('Registrar') }}</x-responsive-nav-link>

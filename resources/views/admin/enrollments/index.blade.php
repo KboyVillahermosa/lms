@@ -21,8 +21,8 @@
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Documents</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Request Date</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reason</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
@@ -52,15 +52,35 @@
                                                     </span>
                                                 @endif
                                             </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                @if($request->document_status === 'approved')
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                        Approved ({{ $request->documents->count() }})
+                                                    </span>
+                                                @elseif($request->document_status === 'rejected')
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                        Rejected ({{ $request->documents->count() }})
+                                                    </span>
+                                                @elseif($request->documents->count() > 0)
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                                        Pending ({{ $request->documents->count() }})
+                                                    </span>
+                                                @else
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                                        None (0)
+                                                    </span>
+                                                @endif
+                                            </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                 {{ $request->created_at->format('M d, Y') }}
                                             </td>
-                                            <td class="px-6 py-4 text-sm text-gray-900">
-                                                {{ $request->reason ?? '-' }}
-                                            </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                @if($request->status === 'pending')
-                                                    <div class="flex space-x-2">
+                                                <div class="flex space-x-2">
+                                                    <!-- View Details Button -->
+                                                    <a href="{{ route('admin.enrollments.show', $request) }}" class="text-blue-600 hover:text-blue-900">
+                                                        View Details
+                                                    </a>
+                                                    @if($request->status === 'pending')
                                                         <!-- Approve Button -->
                                                         <button onclick="approveRequest({{ $request->id }})" class="text-green-600 hover:text-green-900">
                                                             Approve
@@ -69,12 +89,12 @@
                                                         <button onclick="rejectRequest({{ $request->id }})" class="text-red-600 hover:text-red-900">
                                                             Reject
                                                         </button>
-                                                    </div>
-                                                @else
-                                                    <span class="text-gray-500">
-                                                        Processed by {{ optional($request->admin)->name ?? 'Unknown' }}
-                                                    </span>
-                                                @endif
+                                                    @else
+                                                        <span class="text-gray-500">
+                                                            Processed by {{ optional($request->admin)->name ?? 'Unknown' }}
+                                                        </span>
+                                                    @endif
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach
