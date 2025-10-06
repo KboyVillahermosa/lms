@@ -34,6 +34,26 @@ Route::prefix('student')->name('student.')->middleware(['auth','role:student'])-
     Route::get('quizzes', [\App\Http\Controllers\Student\QuizController::class, 'index'])->name('quizzes.index');
     Route::get('quizzes/{quiz}', [\App\Http\Controllers\Student\QuizController::class, 'show'])->name('quizzes.show');
     Route::post('quizzes/{quiz}/submit', [\App\Http\Controllers\Student\QuizController::class, 'submit'])->name('quizzes.submit');
+    
+    // Student enrollment routes
+    Route::get('enrollments', [\App\Http\Controllers\Student\EnrollmentController::class, 'index'])->name('enrollments.index');
+    Route::get('enrollments/create', [\App\Http\Controllers\Student\EnrollmentController::class, 'create'])->name('enrollments.create');
+    Route::post('enrollments', [\App\Http\Controllers\Student\EnrollmentController::class, 'store'])->name('enrollments.store');
+    
+    // New enrollment wizard routes
+    Route::prefix('enrollment')->name('enrollment.')->group(function () {
+        Route::get('wizard', [\App\Http\Controllers\Student\EnrollmentWizardController::class, 'index'])->name('wizard');
+        Route::get('wizard/{step}', [\App\Http\Controllers\Student\EnrollmentWizardController::class, 'showStep'])->name('wizard.step');
+        Route::post('wizard/personal-info', [\App\Http\Controllers\Student\EnrollmentWizardController::class, 'savePersonalInfo'])->name('wizard.personal-info');
+        Route::post('wizard/documents', [\App\Http\Controllers\Student\EnrollmentWizardController::class, 'uploadDocument'])->name('wizard.documents');
+        Route::post('wizard/course-selection', [\App\Http\Controllers\Student\EnrollmentWizardController::class, 'saveCourseSelection'])->name('wizard.course-selection');
+        Route::post('wizard/submit', [\App\Http\Controllers\Student\EnrollmentWizardController::class, 'submit'])->name('wizard.submit');
+        Route::get('status', [\App\Http\Controllers\Student\EnrollmentWizardController::class, 'status'])->name('status');
+        Route::get('documents/{document}/download', [\App\Http\Controllers\Student\EnrollmentWizardController::class, 'downloadDocument'])->name('documents.download');
+    });
+    
+    // Student announcements
+    Route::get('announcements', [\App\Http\Controllers\Student\AnnouncementController::class, 'index'])->name('announcements.index');
 });
 
 // Role-based dashboards (organized controllers/views)
@@ -58,6 +78,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth','role:admin'])->group
     Route::get('/courses', [\App\Http\Controllers\Admin\CourseController::class, 'index'])->name('courses.index');
     Route::get('/courses/create', [\App\Http\Controllers\Admin\CourseController::class, 'create'])->name('courses.create');
     Route::post('/courses', [\App\Http\Controllers\Admin\CourseController::class, 'store'])->name('courses.store');
+    Route::put('/courses/{course}', [\App\Http\Controllers\Admin\CourseController::class, 'update'])->name('courses.update');
     Route::delete('/courses/{course}', [\App\Http\Controllers\Admin\CourseController::class, 'destroy'])->name('courses.destroy');
 
         // Assignments
@@ -79,4 +100,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth','role:admin'])->group
     Route::get('quizes', [\App\Http\Controllers\Admin\QuizController::class, 'index'])->name('quizes.index');
     Route::get('quizes/create', [\App\Http\Controllers\Admin\QuizController::class, 'create'])->name('quizes.create');
     Route::post('quizes', [\App\Http\Controllers\Admin\QuizController::class, 'store'])->name('quizes.store');
+    
+    // Enrollment management
+    Route::get('enrollments', [\App\Http\Controllers\Admin\EnrollmentController::class, 'index'])->name('enrollments.index');
+    Route::get('enrollments/{enrollmentRequest}', [\App\Http\Controllers\Admin\EnrollmentController::class, 'show'])->name('enrollments.show');
+    Route::get('enrollments/{enrollmentRequest}/documents/{document}/download', [\App\Http\Controllers\Admin\EnrollmentController::class, 'downloadDocument'])->name('enrollments.documents.download');
+    Route::post('enrollments/{enrollmentRequest}/documents/{document}/verify', [\App\Http\Controllers\Admin\EnrollmentController::class, 'verifyDocument'])->name('enrollments.documents.verify');
+    Route::post('enrollments/{enrollmentRequest}/approve', [\App\Http\Controllers\Admin\EnrollmentController::class, 'approve'])->name('enrollments.approve');
+    Route::post('enrollments/{enrollmentRequest}/reject', [\App\Http\Controllers\Admin\EnrollmentController::class, 'reject'])->name('enrollments.reject');
+    
+    // Announcements
+    Route::resource('announcements', \App\Http\Controllers\Admin\AnnouncementController::class);
 });

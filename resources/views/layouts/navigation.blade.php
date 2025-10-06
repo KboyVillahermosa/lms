@@ -18,11 +18,20 @@
                         <x-nav-link :href="route('dashboard.admin')" :active="request()->routeIs('dashboard.admin')">
                             {{ __('Admin') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.courses.index')" :active="request()->routeIs('admin.courses.*')">
+                            {{ __('Courses') }}
+                        </x-nav-link>
                         <x-nav-link :href="route('admin.grading.index')" :active="request()->routeIs('admin.grading.*')">
                             {{ __('Grading') }}
                         </x-nav-link>
                         <x-nav-link :href="route('admin.assignments.index')" :active="request()->routeIs('admin.assignments.*')">
                             {{ __('Manage Assignments') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.enrollments.index')" :active="request()->routeIs('admin.enrollments.*')">
+                            {{ __('Enrollments') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.announcements.index')" :active="request()->routeIs('admin.announcements.*')">
+                            {{ __('Announcements') }}
                         </x-nav-link>
                     @elseif($role === 'instructor')
                         <x-nav-link :href="route('dashboard.instructor')" :active="request()->routeIs('dashboard.instructor')">
@@ -58,6 +67,12 @@
                         </x-nav-link>
                         <x-nav-link :href="route('student.quizzes.index')" :active="request()->routeIs('student.quizzes.*')">
                             {{ __('Quizzes') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('student.enrollment.wizard')" :active="request()->routeIs('student.enrollment.*')">
+                            {{ __('Enrollment Application') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('student.announcements.index')" :active="request()->routeIs('student.announcements.*')">
+                            {{ __('Announcements') }}
                         </x-nav-link>
                     @elseif($role === 'registrar')
                         <x-nav-link :href="route('dashboard.registrar')" :active="request()->routeIs('dashboard.registrar')">
@@ -124,7 +139,10 @@
 
             @if($role === 'admin')
                 <x-responsive-nav-link :href="route('dashboard.admin')" :active="request()->routeIs('dashboard.admin')">{{ __('Admin') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.courses.index')">{{ __('Courses') }}</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.assignments.index')">{{ __('Manage Assignments') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.enrollments.index')">{{ __('Enrollments') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.announcements.index')">{{ __('Announcements') }}</x-responsive-nav-link>
             @elseif($role === 'instructor')
                 <x-responsive-nav-link :href="route('dashboard.instructor')">{{ __('Instructor') }}</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('assignments.display')">{{ __('Assignments') }}</x-responsive-nav-link>
@@ -132,6 +150,8 @@
                 <x-responsive-nav-link :href="route('dashboard.student')">{{ __('Student') }}</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('assignments.display')">{{ __('Assignments') }}</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('student.quizzes.index')">{{ __('Quizzes') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('student.enrollment.wizard')">{{ __('Enrollment Application') }}</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('student.announcements.index')">{{ __('Announcements') }}</x-responsive-nav-link>
             @elseif($role === 'registrar')
                 <x-responsive-nav-link :href="route('dashboard.registrar')">{{ __('Registrar') }}</x-responsive-nav-link>
             @else
