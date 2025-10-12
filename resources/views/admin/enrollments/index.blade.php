@@ -34,8 +34,8 @@
                                                 <div class="text-sm text-gray-500">{{ $request->user->email }}</div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm font-medium text-gray-900">{{ $request->course->title }}</div>
-                                                <div class="text-sm text-gray-500">{{ $request->course->description }}</div>
+                                                <div class="text-sm font-medium text-gray-900">{{ optional($request->course)->title ?? 'No course selected' }}</div>
+                                                <div class="text-sm text-gray-500">{{ optional($request->course)->description ?? '' }}</div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 @if($request->status === 'pending')

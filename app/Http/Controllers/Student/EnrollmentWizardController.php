@@ -108,21 +108,29 @@ class EnrollmentWizardController extends Controller
 
         // Validate file type
         $file = $request->file('document');
+        // Normalize accepted formats (lowercase) and validate if provided
         $allowedFormats = $documentType->accepted_formats ?? [];
-        
-        if (!in_array(strtolower($file->getClientOriginalExtension()), $allowedFormats)) {
-            return back()->withErrors(['document' => 'Invalid file format. Allowed formats: ' . implode(', ', $allowedFormats)]);
+        $allowedFormats = array_map('strtolower', (array) $allowedFormats);
+
+        $ext = strtolower($file->getClientOriginalExtension());
+        if (!empty($allowedFormats) && !in_array($ext, $allowedFormats)) {
+            return back()->withErrors(['document' => 'Invalid file format. Allowed formats: ' . implode(', ', $allowedFormats)])->withInput();
         }
 
-        // Validate file size
+        // Validate file size (documentType->max_file_size is stored in KB)
         if ($file->getSize() > ($documentType->max_file_size * 1024)) {
-            return back()->withErrors(['document' => 'File size too large. Maximum size: ' . $documentType->max_file_size_mb . 'MB']);
+            return back()->withErrors(['document' => 'File size too large. Maximum size: ' . $documentType->getMaxFileSizeMbAttribute() . ' MB'])->withInput();
         }
 
-        // Store file
+        // Store file with exception handling
         $originalName = $file->getClientOriginalName();
-        $storedName = Str::random(40) . '.' . $file->getClientOriginalExtension();
-        $path = $file->storeAs('enrollment-documents', $storedName, 'private');
+        $storedName = Str::random(40) . '.' . $ext;
+        try {
+            $path = $file->storeAs('enrollment-documents', $storedName, 'private');
+        } catch (\Exception $e) {
+            \Log::error('Failed to store enrollment document', ['error' => $e->getMessage()]);
+            return back()->withErrors(['document' => 'Failed to store uploaded file. Please check server storage permissions or try again.'])->withInput();
+        }
 
         // Delete existing document if any
         $existingDocument = $enrollmentRequest->documents()

@@ -59,5 +59,8 @@ class DatabaseSeeder extends Seeder
                 'department' => null,
             ]
         );
+
+        // Seed default document types
+        $this->call([\Database\Seeders\DocumentTypeSeeder::class]);
     }
 }

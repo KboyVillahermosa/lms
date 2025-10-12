@@ -2,6 +2,25 @@
 
 @section('step-content')
 <div class="p-6">
+    <!-- Validation Errors -->
+    @if($errors->any())
+        <div class="mb-4">
+            <div class="p-3 bg-red-50 border border-red-200 rounded-md">
+                <ul class="list-disc list-inside text-sm text-red-700">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    @endif
+
+    @if(session('success'))
+        <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded-md text-sm text-green-700">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <div class="mb-6">
         <h3 class="text-lg font-medium text-gray-900">Document Upload</h3>
         <p class="text-sm text-gray-600 mt-1">Please upload the required documents for verification. All documents must be clear and legible.</p>

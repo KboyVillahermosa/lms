@@ -239,12 +239,16 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div class="flex space-x-2">
-                                                    <a href="{{ route('admin.enrollments.documents.download', [$enrollmentRequest, $document]) }}" 
-                                                       class="text-indigo-600 hover:text-indigo-900" title="Download">
-                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                                        </svg>
-                                                    </a>
+                                                                    <a href="{{ route('admin.enrollments.documents.preview', [$enrollmentRequest, $document]) }}" target="_blank" rel="noopener" class="text-indigo-600 hover:text-indigo-900" title="Preview">
+                                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A2 2 0 0122 9.618v4.764a2 2 0 01-1.447 1.894L15 18v-8zM4 6h8v12H4z"></path>
+                                                                        </svg>
+                                                                    </a>
+                                                                    <a href="{{ route('admin.enrollments.documents.download', [$enrollmentRequest, $document]) }}" class="text-indigo-600 hover:text-indigo-900 ml-2" title="Download">
+                                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                                        </svg>
+                                                                    </a>
                                                     @if($document->verification_status === 'pending')
                                                         <button onclick="verifyDocument({{ $document->id }}, 'approved')" 
                                                                 class="text-green-600 hover:text-green-900" title="Approve">

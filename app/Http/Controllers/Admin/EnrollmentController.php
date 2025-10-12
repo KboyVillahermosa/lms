@@ -8,6 +8,7 @@ use App\Models\EnrollmentDocument;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class EnrollmentController extends Controller
 {
@@ -34,20 +35,80 @@ class EnrollmentController extends Controller
     /**
      * Download document for verification
      */
-    public function downloadDocument(EnrollmentDocument $document)
+    public function downloadDocument(EnrollmentRequest $enrollmentRequest, EnrollmentDocument $document)
     {
-        if (!Storage::disk('private')->exists($document->file_path)) {
-            return back()->withErrors(['error' => 'Document file not found.']);
+        // Ensure the document belongs to the enrollment request
+        if ($document->enrollment_request_id !== $enrollmentRequest->id) {
+            abort(404);
         }
 
+        // Ensure file exists
+        if (!Storage::disk('private')->exists($document->file_path)) {
+            // Return to admin with error and log
+            Log::warning('Enrollment document missing on disk', ['document_id' => $document->id, 'path' => $document->file_path]);
+            return back()->with('error', 'Document file not found on disk.');
+        }
+
+        $mime = $document->mime_type ?? Storage::disk('private')->mimeType($document->file_path);
+
+        // For common previewable types (images and PDFs), return inline so browsers open them directly
+        if (str_starts_with($mime, 'image/') || $mime === 'application/pdf') {
+            $stream = Storage::disk('private')->get($document->file_path);
+            $filename = addslashes($document->original_filename);
+            $disposition = "inline; filename=\"{$filename}\"";
+            return response($stream, 200)
+                ->header('Content-Type', $mime)
+                ->header('Content-Disposition', $disposition);
+        }
+
+        // Default - force download
         return Storage::disk('private')->download($document->file_path, $document->original_filename);
+    }
+
+    /**
+     * Stream document inline for preview (more efficient for large files)
+     */
+    public function previewDocument(EnrollmentRequest $enrollmentRequest, EnrollmentDocument $document)
+    {
+        // Ensure the document belongs to the enrollment request
+        if ($document->enrollment_request_id !== $enrollmentRequest->id) {
+            abort(404);
+        }
+
+        if (!Storage::disk('private')->exists($document->file_path)) {
+            Log::warning('Enrollment document missing on disk (preview)', ['document_id' => $document->id, 'path' => $document->file_path]);
+            return back()->with('error', 'Document file not found on disk.');
+        }
+
+        $mime = $document->mime_type ?? Storage::disk('private')->mimeType($document->file_path);
+
+        $stream = Storage::disk('private')->readStream($document->file_path);
+        if ($stream === false) {
+            Log::error('Failed to open stream for enrollment document', ['document_id' => $document->id]);
+            return back()->with('error', 'Unable to open document for preview.');
+        }
+
+        $filename = addslashes($document->original_filename);
+        $disposition = "inline; filename=\"{$filename}\"";
+
+        return response()->stream(function () use ($stream) {
+            fpassthru($stream);
+            if (is_resource($stream)) fclose($stream);
+        }, 200, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => $disposition,
+        ]);
     }
 
     /**
      * Verify document (approve/reject)
      */
-    public function verifyDocument(Request $request, EnrollmentDocument $document)
+    public function verifyDocument(Request $request, EnrollmentRequest $enrollmentRequest, EnrollmentDocument $document)
     {
+        // Ensure document belongs to enrollment
+        if ($document->enrollment_request_id !== $enrollmentRequest->id) {
+            abort(404);
+        }
         $request->validate([
             'status' => 'required|in:approved,rejected,resubmission_required',
             'admin_notes' => 'nullable|string|max:1000'
@@ -84,6 +145,8 @@ class EnrollmentController extends Controller
             return back()->withErrors(['error' => 'Cannot approve enrollment until all documents are verified and approved.']);
         }
 
+        Log::info('Admin approving enrollment', ['enrollment_request_id' => $enrollmentRequest->id, 'admin_id' => Auth::id()]);
+
         $enrollmentRequest->update([
             'status' => 'approved',
             'admin_id' => Auth::id(),
@@ -105,14 +168,20 @@ class EnrollmentController extends Controller
      */
     public function reject(Request $request, EnrollmentRequest $enrollmentRequest)
     {
+        // Accept a rejection reason (from the show modal) or admin_notes (from index modal)
         $request->validate([
-            'admin_notes' => 'required|string|max:500'
+            'reason' => 'nullable|string|max:500',
+            'admin_notes' => 'nullable|string|max:500'
         ]);
+
+        $note = $request->input('reason') ?? $request->input('admin_notes');
+
+        Log::info('Admin rejecting enrollment', ['enrollment_request_id' => $enrollmentRequest->id, 'admin_id' => Auth::id(), 'note_present' => !empty($note)]);
 
         $enrollmentRequest->update([
             'status' => 'rejected',
             'admin_id' => Auth::id(),
-            'admin_notes' => $request->admin_notes,
+            'admin_notes' => $note,
             'processed_at' => now(),
             'document_status' => 'rejected'
         ]);

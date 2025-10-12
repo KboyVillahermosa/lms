@@ -105,6 +105,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth','role:admin'])->group
     Route::get('enrollments', [\App\Http\Controllers\Admin\EnrollmentController::class, 'index'])->name('enrollments.index');
     Route::get('enrollments/{enrollmentRequest}', [\App\Http\Controllers\Admin\EnrollmentController::class, 'show'])->name('enrollments.show');
     Route::get('enrollments/{enrollmentRequest}/documents/{document}/download', [\App\Http\Controllers\Admin\EnrollmentController::class, 'downloadDocument'])->name('enrollments.documents.download');
+    Route::get('enrollments/{enrollmentRequest}/documents/{document}/preview', [\App\Http\Controllers\Admin\EnrollmentController::class, 'previewDocument'])->name('enrollments.documents.preview');
     Route::post('enrollments/{enrollmentRequest}/documents/{document}/verify', [\App\Http\Controllers\Admin\EnrollmentController::class, 'verifyDocument'])->name('enrollments.documents.verify');
     Route::post('enrollments/{enrollmentRequest}/approve', [\App\Http\Controllers\Admin\EnrollmentController::class, 'approve'])->name('enrollments.approve');
     Route::post('enrollments/{enrollmentRequest}/reject', [\App\Http\Controllers\Admin\EnrollmentController::class, 'reject'])->name('enrollments.reject');
